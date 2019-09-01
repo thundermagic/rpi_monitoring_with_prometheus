@@ -1,0 +1,12 @@
+[Unit]
+Description=Node Exporter smartmon textfile collector
+After=network.target
+
+[Service]
+User=root
+Group=root
+Type=simple
+ExecStart=/usr/local/bin/run_smartmon.sh
+
+[Install]
+WantedBy=multi-user.target

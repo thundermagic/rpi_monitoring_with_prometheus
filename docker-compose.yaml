@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 x-extra_hosts:
   &pi
   # Change this to IP of your RPi
