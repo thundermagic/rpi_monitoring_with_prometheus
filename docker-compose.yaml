@@ -1,0 +1,51 @@
+version: "2"
+x-extra_hosts:
+  &pi
+  # Change this to IP of your RPi
+  - "pi:192.168.4.4"
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    container_name: prometheus
+    extra_hosts: *pi
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring_config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /mnt/media/appdata/prometheus:/prometheus
+
+  grafana:
+    image: grafana/grafana:6.3.3
+    restart: always
+    container_name: grafana
+    extra_hosts: *pi
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    volumes:
+      - /mnt/media/appdata/grafana:/var/lib/grafana
+
+  blackbox_exporter:
+    image: prom/blackbox-exporter:master
+    restart: always
+    container_name: blackbox_exporter
+    extra_hosts: *pi
+    ports:
+      - "9115:9115"
+    volumes:
+      - ./monitoring_config/blackbox_config.yml:/etc/blackbox_exporter/config.yml
+
+  rpi_cpu_stats:
+    image: thundermagic/rpi_cpu_stats:latest
+    restart: always
+    container_name: rpi_cpu_stats
+    ports:
+      - "9669:9669"
+    environment: # Add the PUID and PGID of the user you want to run the container as
+      - PUID=1001
+      - PGID=1001
+    volumes:
+      - /sys:/sys
+
