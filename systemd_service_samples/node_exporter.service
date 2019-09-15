@@ -3,9 +3,17 @@ Description=Node Exporter
 After=network.target
 
 [Service]
+# User and group used to run this service. If you want to use a different user and/or group, please change them
 User=node_exporter
 Group=node_exporter
 Type=simple
+# some node exporter collectors are enabled by default. Please see https://github.com/prometheus/node_exporter#collectors for details
+# Please modify the below statement as per your requirement. You can enable and disable collectors as you wish.
+#
+# This service specifies a texfile collector directory. If you are not using textfile collectors you can remove this from
+# the below statement. More details about textfile collector: https://github.com/prometheus/node_exporter#textfile-collector
+# If you are using the textfile collector as per below statement, make sure you have /textfile_collector_results directory
+# created
 ExecStart=/usr/local/bin/node_exporter --collector.systemd --collector.processes --collector.buddyinfo --collector.textfile.directory="/textfile_collector_result"
 
 [Install]

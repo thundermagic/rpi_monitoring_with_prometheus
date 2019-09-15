@@ -4,39 +4,59 @@ x-extra_hosts:
   # Change this to IP of your RPi
   - "pi:192.168.4.4"
 services:
+  # Prometheus and grafana services use docker bind mounts to store config data on the host's filesystem. if you're familiar with
+  # docker storage, you can use whatever you want. You can change it to use docker volumes if you want.
+  # I have my external HDD mounted as /mnt/media. If you want to use a different directory for bind mount, you can do
+  # that by modifying the bind mounts under volumes section of a service.
+  #
+  # All the services are multi-arch. So you wouldn't need to change the image if you are not running it on raspberry pi.
+  #
+  # Each services runs on a different port number. Services use docker bridge networking and have host ports mapped
+  # to container ports. For these you can change the mapping between host ports and container ports.
+  # Port mapping is in the format <host_port>:<container_port>
   prometheus:
     image: prom/prometheus:latest
     restart: always
     container_name: prometheus
     extra_hosts: *pi
     ports:
+      # Host port 9090 is mapped to container port 9090
       - "9090:9090"
     volumes:
+      # Sample prometheus config is in the monitoring_config directory
       - ./monitoring_config/prometheus.yml:/etc/prometheus/prometheus.yml
+      # Storing prometheus data in the hosts /mnt/media/appdata/prometheus directory
       - /mnt/media/appdata/prometheus:/prometheus
 
   grafana:
-    image: grafana/grafana:6.3.3
+    image: grafana/grafana:latest
     restart: always
     container_name: grafana
     extra_hosts: *pi
     depends_on:
       - prometheus
     ports:
+      # Host port 3000 is mapped to container port 3000
       - "3000:3000"
     volumes:
+      # Storing grafana data in the hosts /mnt/media/appdata/grafana directory
       - /mnt/media/appdata/grafana:/var/lib/grafana
 
+  # This services probes things using HTTP, ICMP, TCP etc. Mainly used to do connectivity and service checks
   blackbox_exporter:
     image: prom/blackbox-exporter:master
     restart: always
     container_name: blackbox_exporter
     extra_hosts: *pi
     ports:
+      # Host port 9115 is mapped to container port 9115
       - "9115:9115"
     volumes:
+      # Sample blackbox config is in the monitoring_config directory. You would normally won't need to change this
       - ./monitoring_config/blackbox_config.yml:/etc/blackbox_exporter/config.yml
 
+  # If you are not using raspberry pi then you can delete this section. This collects and exposes cpu temperature and
+  # frequency. At the time of writing, these stats are not collected by node_exporter itself.
   rpi_cpu_stats:
     image: thundermagic/rpi_cpu_stats:latest
     restart: always
@@ -47,5 +67,6 @@ services:
       - PUID=1001
       - PGID=1001
     volumes:
+      # Mounting the host's sys directory to containers /sys directory.
       - /sys:/sys
 

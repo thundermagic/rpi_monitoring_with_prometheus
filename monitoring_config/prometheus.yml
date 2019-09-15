@@ -1,3 +1,5 @@
+# This is a sample config. Please change it according to your setup. IP address would be one thing to change
+
 # my global config
 global:
   scrape_interval:     5s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
@@ -56,7 +58,7 @@ scrape_configs:
   - job_name: 'blackbox_ping'
     metrics_path: /probe
     params:
-      module: [icmp]  # Look for a HTTP 200 response.
+      module: [icmp]
     static_configs:
       - targets:
           - www.google.com
