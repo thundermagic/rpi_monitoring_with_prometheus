@@ -1,6 +1,6 @@
 # Monitoring RPi with Prometheus
 Just a bunch of docker services to monitor your Raspberry Pi using prometheus and grafana. It can be used to 
-monitor other platforms as well
+monitor other platforms as well.
 
 Since this uses docker containers, it can be run on `amd64` platforms as well (i.e your windows or linux machine). 
 This guide is generic, any platform specific changes would be highlighted with comments.
@@ -74,7 +74,7 @@ _Skip this step if you are not monitoring disk using S.M.A.R.T_
 
 You need `smartmontools` installed on the host to use this. To install it, `sudo apt install smartmontools`
 
-This uses a script to get disk stats using smartmontools and writes the stats to a file. Node exporter then parse
+This uses a script to get disk stats using smartmontools and writes the stats to a file. Node exporter then parses
 the file and exposes the stats. 
 The script (`smartmon.sh`) is available at: https://github.com/prometheus-community/node-exporter-textfile-collector-scripts.  
 A copy of it is in the `textfile_collectors` directory. If there is a newer version of the this script available, then you can
